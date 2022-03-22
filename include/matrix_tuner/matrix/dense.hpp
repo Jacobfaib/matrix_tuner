@@ -10,12 +10,9 @@ namespace mt
 
 class MT_VISIBILITY_EXTERNAL dense_matrix;
 
-class dense_matrix : public matrix
+class dense_matrix : public matrix<>
 {
-  using base_type = matrix;
-
-public:
-  using base_type::base_type;
+  MT_COMMON_MATRIX_HEADER;
 
   mt_error_t mult(const matrix*,matrix*) const noexcept final;
 
