@@ -8,7 +8,7 @@
 namespace mt
 {
 
-class dense_matrix : matrix
+class dense_matrix : public matrix
 {
   using base_type = matrix;
 
