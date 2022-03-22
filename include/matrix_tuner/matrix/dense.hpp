@@ -15,7 +15,9 @@ class dense_matrix : matrix
 public:
   using base_type::base_type;
 
-  error_code mult(const matrix*,matrix*) const noexcept;
+  error_code mult(const matrix*,matrix*) const noexcept final;
+
+  virtual ~dense_matrix() noexcept { }
 
 private:
   std::vector<double> data_;

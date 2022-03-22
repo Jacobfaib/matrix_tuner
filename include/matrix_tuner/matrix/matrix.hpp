@@ -14,6 +14,8 @@ protected:
 
   constexpr matrix(std::size_t r = 0, std::size_t c = 0) noexcept : rows_(r), cols_(c) { }
 
+  virtual error_code mult(const matrix*,matrix*) const noexcept = 0;
+
   virtual ~matrix() { };
 };
 
