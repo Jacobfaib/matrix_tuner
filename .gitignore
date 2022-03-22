@@ -37,3 +37,5 @@ arch-*
 .cache
 make.log
 compile_commands.json
+*.dSYM
+test/ex[0-9]
