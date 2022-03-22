@@ -1,0 +1,8 @@
+# -*- mode: makefile-gmake -*-
+
+# simple macro to append a libraries dependencies to the build flags
+define proj_add_dependency
+PROJ_INCLUDE_PATHS += $($(1)_INCLUDE)
+PROJ_LIB_PATHS     += $($(1)_LIB)
+PROJ_LIBS          += $($(1)_SHORT_LIB_NAME)
+endef
