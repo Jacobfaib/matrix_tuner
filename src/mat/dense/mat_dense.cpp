@@ -3,7 +3,7 @@
 namespace mt
 {
 
-error_code dense_matrix::mult(const matrix *A, matrix *B) const noexcept
+mt_error_t dense_matrix::mult(const matrix *A, matrix *B) const noexcept
 {
   return 0;
 }
