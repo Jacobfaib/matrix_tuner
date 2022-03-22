@@ -4,6 +4,8 @@
 
 ALL: all
 
+include projdir.mk
+
 PROJ_NAME = matrix_tuner
 THIS_DIR := $(lastword $(MAKEFILE_LIST))
 PROJ_DIR_REL ?= $(patsubst %/,%,$(dir $(THIS_DIR)))

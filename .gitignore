@@ -35,3 +35,5 @@
 arch-*
 .clangd
 .cache
+make.log
+compile_commands.json
