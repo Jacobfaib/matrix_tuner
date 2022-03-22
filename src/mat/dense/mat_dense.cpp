@@ -1,11 +1,11 @@
-#include <matrix_tuner/matrix/mat_dense.hpp>
+#include <matrix_tuner/matrix/dense.hpp>
 
 namespace mt
 {
 
-dense_matrix::dense_matrix() noexcept
+error_code dense_matrix::mult(const matrix *A, matrix *B) const noexcept
 {
-
+  return 0;
 }
 
 } // namespace mt
