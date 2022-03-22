@@ -1,5 +1,5 @@
-#ifndef MT_DENSE_HPP
-#define MT_DENSE_HPP
+#ifndef MT_COO_HPP
+#define MT_COO_HPP
 
 #include <matrix_tuner/matrix/matrix.hpp>
 
@@ -8,9 +8,9 @@
 namespace mt
 {
 
-class MT_VISIBILITY_EXTERNAL dense_matrix;
+class MT_VISIBILITY_EXTERNAL coo_matrix;
 
-class dense_matrix : public matrix<>
+class coo_matrix : public matrix<>
 {
   MT_COMMON_MATRIX_HEADER;
 
@@ -19,12 +19,15 @@ class dense_matrix : public matrix<>
   reference_type       operator()(index_type,index_type)       noexcept final;
   mt_error_t           view(std::ostream& = std::cout)   const noexcept final;
 
-  virtual ~dense_matrix() noexcept { }
+  virtual ~coo_matrix() noexcept { }
 
 private:
-  std::vector<double> data_;
+  mutable std::vector<index_type> rows_;
+  mutable std::vector<index_type> cols_;
+  mutable std::vector<value_type> data_;
 };
 
 } // namespace mt
 
-#endif // MT_DENSE_HPP
+
+#endif // MT_COO_HPP
