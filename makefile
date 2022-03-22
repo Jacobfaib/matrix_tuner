@@ -4,24 +4,10 @@
 
 ALL: all
 
-include projdir.mk
-
-PROJ_NAME = matrix_tuner
-THIS_DIR := $(lastword $(MAKEFILE_LIST))
-PROJ_DIR_REL ?= $(patsubst %/,%,$(dir $(THIS_DIR)))
-PROJ_DIR ?= $(realpath $(PROJ_DIR_REL))
+-include ./projdir.mk
 PROJ_CONF_DIR = $(PROJ_DIR)/lib/$(PROJ_NAME)/conf
-
 include $(PROJ_CONF_DIR)/projvariables
 include $(PROJ_CONF_DIR)/projrules
-
-CXX = clang++
-CXXLINKER = clang++
-PROJ_CXXFLAGS += -Wall -fPIC -fvisibility=hidden -fdiagnostics-show-template-tree -fsanitize=address -g -std=gnu++17
-PROJ_CXX_DEPFLAGS = -MMD -MP -MF $(PROJ_OBJ_DIR)/$*.d
-PROJ_LINKER_FLAGS = $(PROJ_LINKER_FLAGS_BASE) -Wl, -bind_at_load -fsanitize=address
-#PROJ_LINKER_FLAGS = $(PROJ_LINKER_FLAGS_BASE) -Wl,-bind_at_load -Wl,-commons,use_dylibs
-#-Wl,-search_paths_first -Wl,-no_compact_unwind -fsanitize=address
 
 # add the appropriate header-file inclusions and linker dependencies for each library we
 # plan to build against
@@ -35,24 +21,8 @@ SRC_ALL = $(filter %.cpp,$(SRC_LEAVES))
 INCLUDE_TREE :=	$(shell find $(PROJ_INCLUDE_DIR) -name "*.hpp")
 INCLUDES_ALL := $(filter %.hpp,$(INCLUDE_TREE))
 
-OBJ  = $(subst $(PROJ_SRC_DIR),$(PROJ_OBJ_DIR),$(SRC_ALL:%.cpp=%.o))
-DEPS = $(OBJ:.o=.d)
-
-# this is a hack to support relpath as not all (i.e. macos) ship with it
-# usage: $(RELPATH FILE BASE)
-RELPATH = $(shell perl -e 'use File::Spec; print File::Spec->abs2rel(@ARGV) . "\n"' $(1) $(2))
-
-ifeq ($(V),)
-  quiet_HELP := "Use \"$(MAKE) V=1\" to see the verbose compile lines.\n"
-  quiet = @printf $(quiet_HELP)$(eval quiet_HELP:=)"  %10s %s\n" "$1$2" "$(call RELPATH,$@,$(PROJ_DIR))"; $($1)
-else ifeq ($(V),0) # Same, but do not print any help
-  quiet = @printf "  %10s %s\n" "$1$2" "$@"; $($1)
-else               # Show the full command line
-  quiet = $($1)
-endif
-
-PROJ_COMPILE_CXX = $(call quiet,CXX) $(PROJ_CXXPPFLAGS) $(CXXPPFLAGS) $(PROJ_CXXFLAGS) $(CXXFLAGS) $(PROJ_INCLUDE_PATHS) $(PROJ_CXX_DEPFLAGS) -c
-PROJ_LINK_CXX = $(call quiet,CXXLINKER) $(PROJ_CXXFLAGS) $(CXXFLAGS) $(PROJ_LINKER_FLAGS) $(PROJ_LIB_PATHS) $(LDFLAGS)
+OBJ  = $(subst $(PROJ_SRC_DIR),$(PROJ_OBJ_DIR),$(SRC_ALL:%.cpp=%.cpp.o))
+DEPS = $(OBJ:%.o=%.d)
 
 LIBS = $(PROJ_LIB_DIR)/$(PROJ_LONG_LIB_NAME)
 
@@ -106,7 +76,7 @@ all:
 	@mkdir -p $(PROJ_ARCH)
 	@>$(PROJ_ARCH)/make.log
 	@ln -sf $(PROJ_ARCH)/make.log make.log
-	+@$(OMAKE_SELF_PRINTDIR) PROJ_DIR=$(PROJ_DIR) PROJ_ARCH=$(PROJ_ARCH) all-local 2>&1 | tee -a ${PROJ_ARCH}/make.log
+	+@$(OMAKE_SELF_PRINTDIR) PROJ_DIR=$(PROJ_DIR) PROJ_ARCH=$(PROJ_ARCH) all-local 2>&1 | tee -a $(PROJ_ARCH)/make.log
 
 info:
 	-@echo "=========================================="
@@ -128,11 +98,11 @@ info:
 all-local: info $(LIBS)
 
 $(LIBS): $(OBJ) | $$(@D)/.DIR
-	$(PROJ_LINK_CXX) -o $@ $^ $(PROJ_LIBS)
+	$(PROJ_LINK_CXX_SINGLE) -o $@ $^ $(PROJ_LIBS)
 	@ln -sf $@ $(PROJ_LIB_DIR)/$(PROJ_LIB_NAME)
 
-$(PROJ_OBJ_DIR)/%.o: $(PROJ_SRC_DIR)/%.cpp | $$(@D)/.DIR
-	$(PROJ_COMPILE_CXX) $< -o $@
+$(PROJ_OBJ_DIR)/%.cpp.o: $(PROJ_SRC_DIR)/%.cpp | $$(@D)/.DIR
+	$(PROJ_COMPILE_CXX_SINGLE) -c $< -o $@
 
 .PRECIOUS: %/.DIR
 

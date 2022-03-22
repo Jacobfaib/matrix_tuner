@@ -8,6 +8,8 @@
 namespace mt
 {
 
+class MT_VISIBILITY_EXTERNAL dense_matrix;
+
 class dense_matrix : public matrix
 {
   using base_type = matrix;

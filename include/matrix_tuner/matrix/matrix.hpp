@@ -6,6 +6,8 @@
 namespace mt
 {
 
+class MT_VISIBILITY_EXTERNAL matrix;
+
 class matrix
 {
 protected:

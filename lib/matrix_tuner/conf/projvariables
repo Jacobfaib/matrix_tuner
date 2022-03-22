@@ -1,7 +1,10 @@
 # -*- mode: makefile-gmake -*-
 OMAKE_SELF_PRINTDIR = $(MAKE) --print-directory
-SHELL               = /opt/homebrew/bin/bash
+SHELL               = bash
 OS                 := $(shell uname)
+
+CXX       = clang++
+CXXLINKER = clang++
 
 ifeq ($(OS),Darwin)
   PROJ_ARCH             ?= arch-darwin-debug
@@ -28,3 +31,23 @@ PROJ_LIB_NAME       = $(PROJ_LIB_BASE).$(PROJ_LIB_SUFFIX)
 PROJ_INCLUDE_PATHS = -I$(PROJ_INCLUDE_DIR)
 PROJ_LIB_PATHS     = -L$(PROJ_LIB_DIR)
 PROJ_LIBS          = -lstdc++
+
+PROJ_CXXFLAGS    += -Wall -fPIC -fvisibility=hidden -fdiagnostics-show-template-tree -fsanitize=address -g -std=gnu++17
+PROJ_CXX_DEPFLAGS = -MMD -MP -MF $(PROJ_OBJ_DIR)/$*.d
+PROJ_LINKER_FLAGS = $(PROJ_LINKER_FLAGS_BASE) -Wl, -bind_at_load -fsanitize=address
+
+# this is a hack to support relpath as not all (i.e. macos) ship with it
+# usage: $(RELPATH FILE BASE)
+RELPATH = $(shell perl -e 'use File::Spec; print File::Spec->abs2rel(@ARGV) . "\n"' $(1) $(2))
+
+ifeq ($(V),)
+  quiet_HELP := "Use \"$(MAKE) V=1\" to see the verbose compile lines.\n"
+  quiet = @printf $(quiet_HELP)$(eval quiet_HELP:=)"  %10s %s\n" "$1$2" "$(call RELPATH,$@,$(PROJ_DIR))"; $($1)
+else ifeq ($(V),0) # Same, but do not print any help
+  quiet = @printf "  %10s %s\n" "$1$2" "$@"; $($1)
+else               # Show the full command line
+  quiet = $($1)
+endif
+
+PROJ_COMPILE_CXX_SINGLE = $(call quiet,CXX) $(PROJ_CXXPPFLAGS) $(CXXPPFLAGS) $(PROJ_CXXFLAGS) $(CXXFLAGS) $(PROJ_INCLUDE_PATHS) $(PROJ_CXX_DEPFLAGS)
+PROJ_LINK_CXX_SINGLE    = $(call quiet,CXXLINKER) $(PROJ_CXXFLAGS) $(CXXFLAGS) $(PROJ_LINKER_FLAGS) $(PROJ_LIB_PATHS) $(LDFLAGS)

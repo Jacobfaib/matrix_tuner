@@ -6,3 +6,8 @@ PROJ_INCLUDE_PATHS += $($(1)_INCLUDE)
 PROJ_LIB_PATHS     += $($(1)_LIB)
 PROJ_LIBS          += $($(1)_SHORT_LIB_NAME)
 endef
+
+.SUFFIXES: .cpp
+
+.cpp:
+	$(PROJ_COMPILE_CXX_SINGLE) `pwd`/$< -o $@ $(PROJ_LIB_PATHS) $(PROJ_LIBS) $(PROJ_SHORT_LIB_NAME)

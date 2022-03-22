@@ -13,9 +13,9 @@ namespace mt
 #endif
 
 #ifdef __GNUC__
-#  define SF_FUNCTION_NAME __PRETTY_FUNCTION__
+#  define MT_FUNCTION_NAME __PRETTY_FUNCTION__
 #else
-#  define SF_FUNCTION_NAME __func__
+#  define MT_FUNCTION_NAME __func__
 #endif
 
 #ifndef __has_attribute
