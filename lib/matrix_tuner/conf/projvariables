@@ -34,7 +34,7 @@ PROJ_LIB_PATHS     = -L$(PROJ_LIB_DIR)
 PROJ_LIBS          = -lstdc++
 
 PROJ_CXXFLAGS     ?= -Wall -fPIC -fvisibility=hidden -fdiagnostics-show-template-tree -fsanitize=address -g -std=gnu++17
-PROJ_LINKER_FLAGS ?= $(PROJ_LINKER_FLAGS_BASE) -Wl, -bind_at_load -fsanitize=address
+PROJ_LINKER_FLAGS ?= $(PROJ_LINKER_FLAGS_BASE) -Wl,-bind_at_load -fsanitize=address
 PROJ_CXX_DEPFLAGS  = -MMD -MP -MF $(PROJ_OBJ_DIR)/$*.d
 
 # this is a hack to support relpath as not all (i.e. macos) ship with it
