@@ -1,6 +1,6 @@
 # -*- mode: makefile-gmake -*-
 OMAKE_SELF_PRINTDIR = $(MAKE) --print-directory
-OS                 := $(shell uname)
+OS                  = $(shell uname)
 
 -include $(PROJ_DIR)/user.mk
 
@@ -10,7 +10,7 @@ CXXLINKER ?= clang++
 ifeq ($(OS),Darwin)
   PROJ_ARCH             ?= arch-darwin-debug
   PROJ_LIB_SUFFIX        = dylib
-  PROJ_LINKER_FLAGS_BASE = -shared -dynamiclib -Wl,-commons,use_dylibs -Wl,-bind_at_load
+  PROJ_LINKER_FLAGS_BASE = -shared -dynamiclib -Wl,-commons,use_dylibs,-bind_at_load
 else
   PROJ_ARCH             ?= arch-linux-debug
   PROJ_LIB_SUFFIX        = so
@@ -34,7 +34,7 @@ PROJ_LIB_PATHS     = -L$(PROJ_LIB_DIR)
 PROJ_LIBS          = -lstdc++
 
 PROJ_CXXFLAGS     ?= -Wall -fPIC -fvisibility=hidden -fdiagnostics-show-template-tree -fsanitize=address -g -std=gnu++17
-PROJ_LINKER_FLAGS ?= $(PROJ_LINKER_FLAGS_BASE) -fsanitize=address
+PROJ_LINKER_FLAGS ?= $(PROJ_LINKER_FLAGS_BASE) -Wl,-rpath,$(PROJ_LIB_DIR) -fsanitize=address
 PROJ_CXX_DEPFLAGS  = -MMD -MP -MF $(PROJ_OBJ_DIR)/$*.d
 
 # this is a hack to support relpath as not all (i.e. macos) ship with it
