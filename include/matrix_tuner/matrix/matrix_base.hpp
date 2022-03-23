@@ -3,8 +3,8 @@
 
 #include <matrix_tuner/sys/sys.hpp>
 
-#include <type_traits>
-#include <iostream>
+#include <utility>  // std::make_pair
+#include <iostream> // std::cout
 
 namespace mt
 {
@@ -26,12 +26,25 @@ public:
   virtual const_reference_type operator()(index_type,index_type) const noexcept = 0;
   virtual reference_type       operator()(index_type,index_type)       noexcept = 0;
   virtual mt_error_t           view(std::ostream& = std::cout)   const noexcept = 0;
+  virtual index_type           nnz()                             const noexcept = 0;
 
-  virtual ~matrix() { };
+  virtual ~matrix() noexcept { };
+
+  auto nrows() const noexcept { return nrows_; }
+  auto ncols() const noexcept { return ncols_; }
+  auto shape() const noexcept { return std::make_pair(nrows(),ncols()); }
 
 protected:
   index_type nrows_;
   index_type ncols_;
+
+  mt_error_t deep_copy(const matrix &other) noexcept
+  {
+    for (auto i = 0; i < nrows_; ++i) {
+      for (auto j = 0; j < ncols_; ++j) if (const auto val = other(i,j)) this->operator()(i,j) = val;
+    }
+    return MT_SUCCESS;
+  }
 };
 
 #define MT_COMMON_MATRIX_HEADER                 \

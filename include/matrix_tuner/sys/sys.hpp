@@ -65,7 +65,7 @@ enum class error_type
 #define MTCHECK(...) do {                                                                      \
     const auto errc = __VA_ARGS__;                                                             \
     if (mtunlikely(mt::detail::check_error(errc))) {                                           \
-      return mt::error(__FILE__,MT_FUNCTION_NAME,__LINE__,mt::error_type::ERROR_REPEAT,static_cast<mt_error_t>(errc),nullptr); \
+      return mt::error(__FILE__,MT_FUNCTION_NAME,__LINE__,mt::error_type::ERROR_REPEAT,static_cast<mt::mt_error_t>(errc),nullptr); \
     }                                                                                          \
   } while (0)
 
