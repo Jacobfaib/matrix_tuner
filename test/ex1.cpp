@@ -1,7 +1,8 @@
-#include <matrix_tuner/matrix/dense.hpp>
+#include <matrix_tuner/matrix/matrix.hpp>
 
 int main(int argc, char *argv[])
 {
-  auto mat = mt::dense_matrix();
+  auto dense = mt::dense_matrix(10,10);
+  auto coo   = mt::coo_matrix(15,15);
   return 0;
 }

@@ -30,11 +30,11 @@ PROJ_SHORT_LIB_NAME = -l$(PROJ_NAME)
 PROJ_LIB_NAME       = $(PROJ_LIB_BASE).$(PROJ_LIB_SUFFIX)
 
 PROJ_INCLUDE_PATHS = -I$(PROJ_INCLUDE_DIR)
-PROJ_LIB_PATHS     = -L$(PROJ_LIB_DIR)
+PROJ_LIB_PATHS     = -L$(PROJ_LIB_DIR) -Wl,-rpath,$(PROJ_LIB_DIR)
 PROJ_LIBS          = -lstdc++
 
 PROJ_CXXFLAGS     ?= -Wall -fPIC -fvisibility=hidden -fdiagnostics-show-template-tree -fsanitize=address -g -std=gnu++17
-PROJ_LINKER_FLAGS ?= $(PROJ_LINKER_FLAGS_BASE) -Wl,-rpath,$(PROJ_LIB_DIR) -fsanitize=address
+PROJ_LINKER_FLAGS ?= $(PROJ_LINKER_FLAGS_BASE) -fsanitize=address
 PROJ_CXX_DEPFLAGS  = -MMD -MP -MF $(PROJ_OBJ_DIR)/$*.d
 
 # this is a hack to support relpath as not all (i.e. macos) ship with it

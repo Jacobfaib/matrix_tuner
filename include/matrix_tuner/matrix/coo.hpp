@@ -1,7 +1,7 @@
-#ifndef MT_COO_HPP
-#define MT_COO_HPP
+#ifndef MT_MATRIX_COO_HPP
+#define MT_MATRIX_COO_HPP
 
-#include <matrix_tuner/matrix/matrix.hpp>
+#include <matrix_tuner/matrix/matrix_base.hpp>
 
 #include <vector>
 
@@ -30,4 +30,4 @@ private:
 } // namespace mt
 
 
-#endif // MT_COO_HPP
+#endif // MT_MATRIX_COO_HPP

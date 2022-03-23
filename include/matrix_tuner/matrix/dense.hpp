@@ -1,7 +1,7 @@
-#ifndef MT_DENSE_HPP
-#define MT_DENSE_HPP
+#ifndef MT_MATRIX_DENSE_HPP
+#define MT_MATRIX_DENSE_HPP
 
-#include <matrix_tuner/matrix/matrix.hpp>
+#include <matrix_tuner/matrix/matrix_base.hpp>
 
 #include <vector>
 
@@ -27,4 +27,4 @@ private:
 
 } // namespace mt
 
-#endif // MT_DENSE_HPP
+#endif // MT_MATRIX_DENSE_HPP

@@ -46,6 +46,7 @@ public:
     // std::endl all of these to flush stdout
     std::cout<<"Matrix Tuner error "<<error_bar<<std::endl;
     std::cout<<"Error code "<<initial_error_<<std::endl;
+
     while (!stack_.empty()) {
       int         line;
       std::string func,file;
