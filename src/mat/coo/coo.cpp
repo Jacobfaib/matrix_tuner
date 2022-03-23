@@ -1,6 +1,5 @@
 #include <matrix_tuner/matrix/coo.hpp>
 
-#include <iterator>  // std::begin,end
 #include <algorithm> // std::lower_bound
 
 namespace mt
@@ -22,8 +21,8 @@ template <typename T>
 static auto insert_sorted(std::vector<T>& v, const T& needle)
 {
   // find the correct sorted insert position
-  const auto cend = std::cend(v);
-  const auto loc  = std::lower_bound(std::cbegin(v),cend,needle);
+  const auto cend = std::end(v);
+  const auto loc  = std::lower_bound(std::begin(v),cend,needle);
 
   // only insert if not a duplicate
   // test for end() first to make duplicate test safe
@@ -36,7 +35,7 @@ static auto operator_brackets(Idx_t r, Idx_t c, std::vector<Idx_t>& rows, std::v
   insert_sorted(rows,r); // unused
   const auto col_it = insert_sorted(cols,c);
   // can't do this in-line since iterator may be invalidated due to insert
-  const auto idx = std::distance(cols.cbegin(),col_it);
+  const auto idx = std::distance(cols.begin(),col_it);
 
   if (idx >= data.size()) data.resize(std::min(static_cast<decltype(max_idx)>(idx+1),max_idx));
   return idx;
