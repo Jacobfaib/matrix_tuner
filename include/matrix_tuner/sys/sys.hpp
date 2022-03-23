@@ -39,10 +39,20 @@ namespace mt
 #define mtunlikely(...) __builtin_expect(!!(__VA_ARGS__),0)
 #define mtlikely(...)   __builtin_expect(!!(__VA_ARGS__),1)
 
+// declare the enum as C-style so we don't get annoying compile warnings about conversions
+typedef enum
+{
+  MT_SUCCESS,
+  MT_ERROR_UNKNOWN,
+  MT_ERROR_LOGIC,
+  MT_ERROR_OUT_OF_RANGE,
+  MT_ERROR_MAX,
+} mt_error_t;
+
 namespace detail
 {
 
-template <typename T> static inline constexpr bool check_error(T&& err) noexcept { return !!err; }
+static inline constexpr bool check_error(mt_error_t err) noexcept { return static_cast<bool>(err); }
 
 }
 
@@ -59,11 +69,17 @@ enum class error_type
     }                                                                                          \
   } while (0)
 
-#define MTSETERR(errcode,...) return mt::error(__FILE__,SF_FUNCTION_NAME,__LINE__,mt::error_type::ERROR_INITIAL,errcode,__VA_ARGS__)
+#define MTSETERR(errcode,...) return mt::error(__FILE__,MT_FUNCTION_NAME,__LINE__,mt::error_type::ERROR_INITIAL,errcode,__VA_ARGS__)
 
-using mt_error_t = int;
+#define MT_CONVERT_CATCH(ex_type,error_code)                    \
+  catch (const ex_type & ex) { MTSETERR(error_code,"%s",ex.what()); }
 
-MT_EXTERN mt_error_t error_handler(const char*,const char*,int,mt_error_t,error_type);
+#define MT_TRY(...) try { __VA_ARGS__; }                                        \
+  MT_CONVERT_CATCH(std::logic_error,MT_ERROR_LOGIC)                             \
+  MT_CONVERT_CATCH(std::exception,MT_ERROR_UNKNOWN)                             \
+  catch (...) { MTSETERR(MT_ERROR_UNKNOWN,"%s","Unknown exception caught");  }
+
+MT_EXTERN mt_error_t error_handler(const char*,const char*,int,mt_error_t,error_type) noexcept;
 template <typename T>
 MT_EXTERN mt_error_t error(const char*,const char*,int,error_type,mt_error_t,const char*,T&&...);
 

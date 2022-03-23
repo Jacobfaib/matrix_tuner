@@ -1,5 +1,6 @@
 #include <matrix_tuner/sys/sys.hpp>
 
+#include <array>
 #include <tuple>
 #include <queue>
 #include <string>
@@ -7,6 +8,13 @@
 
 namespace mt
 {
+
+static constexpr auto error_strings = std::array<const char*,MT_ERROR_MAX>{
+  "unknown error",
+  "logic error",
+  "index out of range",
+  "max error code"
+};
 
 static constexpr const char error_bar[] = "-----------------------------------------------------------------------------------";
 
@@ -50,7 +58,7 @@ public:
   }
 };
 
-mt_error_t error_handler(const char *file, const char *func, int line, mt_error_t errc, error_type)
+mt_error_t error_handler(const char *file, const char *func, int line, mt_error_t errc, error_type) noexcept
 {
   static auto bt = backtrace{errc};
 

@@ -5,10 +5,9 @@
 namespace mt
 {
 
-mt_error_t coo_matrix::mult(const matrix*,matrix*) const noexcept
-{
-  return 0;
-}
+mt_error_t coo_matrix::mult(const matrix*,matrix*) const noexcept MT_TRY({
+  return MT_SUCCESS;
+})
 
 
 template <typename T>
@@ -74,7 +73,7 @@ mt_error_t coo_matrix::view(std::ostream& ostrm) const noexcept
     for (auto j = 0; j < ncols_-1; ++j) ostrm<<get_value(i,j)<<',';
     ostrm<<get_value(i,ncols_-1)<<'\n';
   }
-  return 0;
+  return MT_SUCCESS;
 }
 
 } // namespace mt
