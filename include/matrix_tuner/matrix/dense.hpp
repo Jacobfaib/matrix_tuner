@@ -26,11 +26,11 @@ class dense_matrix : public matrix<>
     else if (c == -1)       ncols_ = size/r;
   }
 
-  mt_error_t           mult(const matrix*,matrix*)       const noexcept final;
-  const_reference_type operator()(index_type,index_type) const noexcept final;
-  reference_type       operator()(index_type,index_type)       noexcept final;
-  mt_error_t           view(std::ostream& = std::cout)   const noexcept final;
-  index_type           nnz()                             const noexcept final;
+  mt_error_t     mult(const matrix*,matrix*)       const noexcept final;
+  value_type     operator()(index_type,index_type) const noexcept final;
+  reference_type operator()(index_type,index_type)       noexcept final;
+  mt_error_t     view(std::ostream& = std::cout)   const noexcept final;
+  index_type     nnz()                             const noexcept final;
 
   virtual ~dense_matrix() noexcept { }
 

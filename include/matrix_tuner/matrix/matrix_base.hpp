@@ -22,11 +22,11 @@ public:
 
   constexpr matrix(index_type r = 0, index_type c = 0) noexcept : nrows_(r), ncols_(c) { }
 
-  virtual mt_error_t           mult(const matrix*,matrix*)       const noexcept = 0;
-  virtual const_reference_type operator()(index_type,index_type) const noexcept = 0;
-  virtual reference_type       operator()(index_type,index_type)       noexcept = 0;
-  virtual mt_error_t           view(std::ostream& = std::cout)   const noexcept = 0;
-  virtual index_type           nnz()                             const noexcept = 0;
+  virtual mt_error_t     mult(const matrix*,matrix*)       const noexcept = 0;
+  virtual value_type     operator()(index_type,index_type) const noexcept = 0;
+  virtual reference_type operator()(index_type,index_type)       noexcept = 0;
+  virtual mt_error_t     view(std::ostream& = std::cout)   const noexcept = 0;
+  virtual index_type     nnz()                             const noexcept = 0;
 
   virtual ~matrix() noexcept { };
 

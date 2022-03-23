@@ -14,7 +14,7 @@ mt_error_t dense_matrix::mult(const matrix *A, matrix *B) const noexcept MT_TRY(
   return MT_SUCCESS;
 });
 
-dense_matrix::const_reference_type dense_matrix::operator()(dense_matrix::index_type r, dense_matrix::index_type c) const noexcept
+dense_matrix::value_type dense_matrix::operator()(dense_matrix::index_type r, dense_matrix::index_type c) const noexcept
 {
   return data_[(r*ncols_)+c];
 }

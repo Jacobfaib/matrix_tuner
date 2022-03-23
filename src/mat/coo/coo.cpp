@@ -47,14 +47,12 @@ static auto operator_brackets(Idx_t r, Idx_t c, std::vector<Idx_t>& rows, std::v
   return idx;
 }
 
-coo_matrix::const_reference_type coo_matrix::operator()(coo_matrix::index_type r, coo_matrix::index_type c) const noexcept
+coo_matrix::value_type coo_matrix::operator()(coo_matrix::index_type r, coo_matrix::index_type c) const noexcept
 {
   if (contains(rows_,r) && contains(cols_,c)) {
     return data_[operator_brackets<false>(r,c,rows_,cols_,data_,nrows_*ncols_)];
   } else {
-    static auto zero = value_type{0};
-
-    return zero;
+    return value_type{};
   }
 }
 
