@@ -1,5 +1,6 @@
 #include <matrix_tuner/matrix/coo.hpp>
 
+#include <iterator>  // std::begin,end
 #include <algorithm> // std::lower_bound
 
 namespace mt
@@ -7,7 +8,7 @@ namespace mt
 
 mt_error_t coo_matrix::mult(const matrix*,matrix*) const noexcept MT_TRY({
   return MT_SUCCESS;
-})
+  })
 
 
 template <typename T>
