@@ -5,20 +5,13 @@
 namespace mt
 {
 
-mt_error_t coo_matrix::mult(const matrix*,matrix*) const noexcept MT_TRY({
-  return MT_SUCCESS;
-  })
-
-
-template <typename T>
-static auto print_vector(std::vector<T>& v)
+mt_error_t coo_matrix::mult(const matrix*,matrix*) const noexcept MT_TRY(
 {
-  for (auto &&d : v) std::cout<<d<<',';
-  std::cout<<std::endl;
-}
+  return MT_SUCCESS;
+})
 
 template <typename T>
-static auto insert_sorted(std::vector<T>& v, const T& needle)
+static auto insert_sorted(std::vector<T>& v, const T& needle) noexcept
 {
   // find the correct sorted insert position
   const auto cend = std::end(v);
@@ -51,7 +44,7 @@ coo_matrix::reference_type coo_matrix::operator()(coo_matrix::index_type r, coo_
   return data_[operator_brackets(r,c,rows_,cols_,data_,nrows_*ncols_)];
 }
 
-mt_error_t coo_matrix::view(std::ostream& ostrm) const noexcept
+mt_error_t coo_matrix::view(std::ostream& ostrm) const noexcept MT_TRY(
 {
   const auto rend   = rows_.cend();
   auto       rbegin = rows_.cbegin();
@@ -74,6 +67,6 @@ mt_error_t coo_matrix::view(std::ostream& ostrm) const noexcept
     ostrm<<get_value(i,ncols_-1)<<'\n';
   }
   return MT_SUCCESS;
-}
+})
 
 } // namespace mt

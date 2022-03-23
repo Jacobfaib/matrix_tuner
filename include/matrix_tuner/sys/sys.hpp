@@ -65,23 +65,21 @@ enum class error_type
 #define MTCHECK(...) do {                                                                      \
     const auto errc = __VA_ARGS__;                                                             \
     if (mtunlikely(mt::detail::check_error(errc))) {                                           \
-      return mt::error_handler(__FILE__,__func__,__LINE__,errc,mt::error_type::ERROR_REPEAT);  \
+      return mt::error(__FILE__,MT_FUNCTION_NAME,__LINE__,mt::error_type::ERROR_REPEAT,static_cast<mt_error_t>(errc),nullptr); \
     }                                                                                          \
   } while (0)
 
 #define MTSETERR(errcode,...) return mt::error(__FILE__,MT_FUNCTION_NAME,__LINE__,mt::error_type::ERROR_INITIAL,errcode,__VA_ARGS__)
 
 #define MT_CONVERT_CATCH(ex_type,error_code)                    \
-  catch (const ex_type & ex) { MTSETERR(error_code,"%s",ex.what()); }
+  catch (const ex_type & ex) { MTSETERR(error_code,ex.what()); }
 
 #define MT_TRY(...) try { __VA_ARGS__; }                                        \
   MT_CONVERT_CATCH(std::logic_error,MT_ERROR_LOGIC)                             \
   MT_CONVERT_CATCH(std::exception,MT_ERROR_UNKNOWN)                             \
-  catch (...) { MTSETERR(MT_ERROR_UNKNOWN,"%s","Unknown exception caught");  }
+  catch (...) { MTSETERR(MT_ERROR_UNKNOWN,"Unknown exception caught");  }
 
-MT_EXTERN mt_error_t error_handler(const char*,const char*,int,mt_error_t,error_type) noexcept;
-template <typename T>
-MT_EXTERN mt_error_t error(const char*,const char*,int,error_type,mt_error_t,const char*,T&&...);
+MT_EXTERN mt_error_t error(const char*,const char*,int,error_type,mt_error_t,const char*,...) noexcept;
 
 } // namespace mt
 
