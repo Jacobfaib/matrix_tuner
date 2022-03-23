@@ -5,7 +5,7 @@ namespace mt
 
 mt_error_t dense_matrix::mult(const matrix *A, matrix *B) const noexcept
 {
-  return 0;
+  return MT_SUCCESS;
 }
 
 dense_matrix::const_reference_type dense_matrix::operator()(dense_matrix::index_type r, dense_matrix::index_type c) const noexcept
@@ -24,6 +24,6 @@ mt_error_t dense_matrix::view(std::ostream& ostrm) const noexcept
     for (auto j = 0; j < ncols_-1; ++j) ostrm<<(*this)(i,j)<<',';
     ostrm<<(*this)(i,ncols_-1)<<'\n';
   }
-  return 0;
+  return MT_SUCCESS;
 }
 } // namespace mt
