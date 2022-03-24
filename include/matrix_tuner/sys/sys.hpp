@@ -46,6 +46,7 @@ typedef enum
   MT_ERROR_UNKNOWN,
   MT_ERROR_LOGIC,
   MT_ERROR_OUT_OF_RANGE,
+  MT_ERROR_INCOMP_SIZE,
   MT_ERROR_MAX,
 } mt_error_t;
 

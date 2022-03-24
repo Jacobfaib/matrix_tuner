@@ -16,11 +16,12 @@ class csr_matrix : public matrix<>
 
   csr_matrix(const matrix&) noexcept;
 
-  mt_error_t     mult(const matrix*,matrix*)       const noexcept final;
-  value_type     operator()(index_type,index_type) const noexcept final;
-  reference_type operator()(index_type,index_type)       noexcept final;
-  mt_error_t     view(std::ostream& = std::cout)   const noexcept final;
-  index_type     nnz()                             const noexcept final;
+  mt_error_t     mult(const matrix*,matrix*)         const noexcept final;
+  mt_error_t     mult(const csr_matrix*,csr_matrix*) const noexcept;
+  value_type     operator()(index_type,index_type)   const noexcept final;
+  reference_type operator()(index_type,index_type)         noexcept final;
+  mt_error_t     view(std::ostream& = std::cout)     const noexcept final;
+  index_type     nnz()                               const noexcept final;
 
   virtual ~csr_matrix() noexcept { }
 

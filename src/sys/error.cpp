@@ -14,6 +14,7 @@ static constexpr auto error_strings = std::array<const char*,MT_ERROR_MAX>{
   "unknown error",
   "logic error",
   "index out of range",
+  "incompatible sizes",
   "max error code"
 };
 

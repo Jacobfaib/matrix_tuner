@@ -13,6 +13,26 @@ mt_error_t csr_matrix::mult(const matrix *A, matrix *B) const noexcept MT_TRY(
   return MT_SUCCESS;
 });
 
+mt_error_t csr_matrix::mult(const csr_matrix *A, csr_matrix *B) const noexcept MT_TRY(
+{
+  const auto nr  = nrows();
+  const auto nc  = ncols();
+  const auto anr = A->nrows();
+  const auto anc = A->ncols();
+
+  if (mtunlikely(nc != anr)) MTSETERR(MT_ERROR_INCOMP_SIZE,"Dimensions mismatch (%zu,%zu) not compatible with (%zu,%zu)",nr,nc,anr,anc);
+  if (!B) B = new csr_matrix{nr,anc};
+
+  for (index_type i = 1; i <= nr; ++i) {
+    for (index_type j = 1; j <= anc; ++j) {
+      auto a = value_type{};
+      for (index_type k = 1; k <= nc; ++k) a += (*this)(i,k)*(*A)(k,j);
+      (*B)(i,j) = a;
+    }
+  }
+  return MT_SUCCESS;
+});
+
 csr_matrix::value_type csr_matrix::operator()(csr_matrix::index_type r, csr_matrix::index_type c) const noexcept
 {
   for (auto row = rows_[r-1]-1; row < rows_[r]-1; ++row) {
