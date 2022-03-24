@@ -23,11 +23,55 @@ mt_error_t csr_matrix::mult(const csr_matrix *A, csr_matrix *B) const noexcept M
   if (mtunlikely(nc != anr)) MTSETERR(MT_ERROR_INCOMP_SIZE,"Dimensions mismatch (%zu,%zu) not compatible with (%zu,%zu)",nr,nc,anr,anc);
   if (!B) B = new csr_matrix{nr,anc};
 
-  for (index_type i = 1; i <= nr; ++i) {
-    for (index_type j = 1; j <= anc; ++j) {
-      auto a = value_type{};
-      for (index_type k = 1; k <= nc; ++k) a += (*this)(i,k)*(*A)(k,j);
-      (*B)(i,j) = a;
+  auto       marker = std::vector<int>(anc,-1);
+  index_type nnz    = 0;
+
+  B->rows_.resize(nr+1);
+  B->rows_[0] = nnz;
+
+  // preallocate
+  for (index_type r = 0; r < nr; ++r) {
+    for (auto rmine = rows_[r]; rmine < rows_[r+1]; ++rmine) {
+      const auto cmine = cols_[rmine];
+
+      for (auto rother = A->rows_[cmine]; rother < A->rows_[cmine+1]; ++rother) {
+        auto& mark = marker[A->cols_[rother]];
+
+        if (mark != r) {
+          mark = r;
+          ++nnz;
+        }
+      }
+    }
+    B->rows_[r+1] = nnz;
+  }
+  B->cols_.resize(nnz);
+  B->data_.resize(nnz);
+
+  std::fill(marker.begin(),marker.end(),-1);
+
+  // do the mult
+  for (index_type r = 0, counter = 0; r < nr; ++r) {
+    const auto rstart = counter;
+
+    for (auto rmine = rows_[r]; rmine < rows_[r+1]; ++rmine) {
+      const auto cmine = cols_[rmine];
+      const auto dmine = data_[rmine];
+
+      for (auto rother = A->rows_[cmine]; rother < A->rows_[cmine+1]; ++rother) {
+        const auto cother = A->cols_[rother];
+        const auto dother = A->data_[rother];
+        const auto val    = dmine*dother;
+        auto&      mark   = marker[cother];
+
+        if (mark < rstart) {
+          B->cols_[counter] = cother;
+          B->data_[counter] = val;
+          mark = counter++;
+        } else {
+          B->data_[mark] += val;
+        }
+      }
     }
   }
   return MT_SUCCESS;
