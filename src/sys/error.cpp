@@ -10,13 +10,38 @@
 namespace mt
 {
 
-static constexpr auto error_strings = std::array<const char*,MT_ERROR_MAX>{
-  "unknown error",
-  "logic error",
-  "index out of range",
-  "incompatible sizes",
-  "max error code"
-};
+namespace
+{
+
+template <typename T, std::size_t n, std::size_t... i>
+MT_NODISCARD static constexpr std::array<std::remove_cv_t<T>,n> to_array_impl(T (&&a)[n], std::index_sequence<i...>) noexcept
+{
+  return {{std::move(a[i])...}};
+}
+
+template <typename T, std::size_t N>
+MT_NODISCARD static constexpr std::array<std::remove_cv_t<T>,N> to_array(T (&&a)[N]) noexcept
+{
+  return to_array_impl(std::move(a),std::make_index_sequence<N>{ });
+}
+
+template <std::size_t n>
+MT_NODISCARD static constexpr auto make_error_strings(const char* (&&list)[n]) noexcept
+{
+  static_assert(n == MT_ERROR_MAX,"Missing an error string");
+  return to_array(std::move(list));
+}
+
+} // namespace
+
+static constexpr auto error_strings = make_error_strings({
+    "unknown error",
+    "logic error",
+    "index out of range",
+    "incompatible sizes",
+    "gpu error",
+    "max error code"
+  });
 
 static constexpr const char error_bar[] = "-----------------------------------------------------------------------------------";
 
@@ -52,6 +77,7 @@ public:
     // std::endl all of these to flush stdout
     std::cerr<<"Matrix Tuner ERROR "<<error_bar<<std::endl;
     std::cerr<<"Error code:    "<<initial_error_<<std::endl;
+    std::cerr<<"Error descr:   "<<error_strings[initial_error_]<<std::endl;
     std::cerr<<"Error message: "<<buffer_.data()<<std::endl;
     while (!stack_.empty()) {
       int         line;
@@ -65,7 +91,7 @@ public:
   }
 };
 
-mt_error_t error(const char *file, const char *func, int line, error_type, mt_error_t errc, const char *mess,...) noexcept
+mt_error_t error(const char *file, const char *func, int line, error_type, mt_error_t errc, const char *mess, ...) noexcept
 {
   static auto bt = backtrace{errc};
 

@@ -14,6 +14,25 @@ mt_error_t dense_matrix::mult(const matrix *A, matrix *B) const noexcept MT_TRY(
   return MT_SUCCESS;
 });
 
+mt_error_t dense_matrix::mult(const dense_matrix *A, dense_matrix *B) const noexcept MT_TRY(
+{
+  MTCHECK(duplicate_(A,&B));
+  if (device_->type() == device_type::host) {
+    const auto nc = nrows(), anc = A->ncols(), anr = A->nrows();
+
+    for (auto i = index_type{0}; i < nc; ++i) {
+      for (auto j = index_type{0}; j < anc; ++j) {
+        auto tmp = value_type{0};
+        for (auto k = index_type{0}; k < anr; ++k) tmp += (*this)(i,k)*(*A)(k,j);
+        (*B)(i,j) = tmp;
+      }
+    }
+  } else {
+
+  }
+  return MT_SUCCESS;
+});
+
 dense_matrix::value_type dense_matrix::operator()(dense_matrix::index_type r, dense_matrix::index_type c) const noexcept
 {
   return data_[(r*ncols_)+c];

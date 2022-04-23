@@ -15,15 +15,10 @@ mt_error_t csr_matrix::mult(const matrix *A, matrix *B) const noexcept MT_TRY(
 
 mt_error_t csr_matrix::mult(const csr_matrix *A, csr_matrix *B) const noexcept MT_TRY(
 {
+  MTCHECK(duplicate_(A,&B));
+
   const auto nr  = nrows();
-  const auto nc  = ncols();
-  const auto anr = A->nrows();
-  const auto anc = A->ncols();
-
-  if (mtunlikely(nc != anr)) MTSETERR(MT_ERROR_INCOMP_SIZE,"Dimensions mismatch (%zu,%zu) not compatible with (%zu,%zu)",nr,nc,anr,anc);
-  if (!B) B = new csr_matrix{nr,anc};
-
-  auto       marker = std::vector<int>(anc,-1);
+  auto       marker = std::vector<int>(A->ncols(),-1);
   index_type nnz    = 0;
 
   B->rows_.resize(nr+1);

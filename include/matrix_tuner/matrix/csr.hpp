@@ -29,6 +29,9 @@ private:
   mutable std::vector<index_type> rows_;
   mutable std::vector<index_type> cols_;
   mutable std::vector<value_type> data_;
+
+  mt_error_t mult_host(const matrix*,matrix*) const noexcept;
+  mt_error_t mult_device(const matrix*,matrix*) const noexcept;
 };
 
 } // namespace mt

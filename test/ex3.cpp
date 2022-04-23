@@ -11,6 +11,6 @@ int main(int argc, char *argv[])
   MTCHECK(dmat.view());
 
   auto cmat = mt::coo_matrix{dmat};
-  cmat.view();
+  MTCHECK(cmat.view());
   return 0;
 }

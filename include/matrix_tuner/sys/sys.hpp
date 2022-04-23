@@ -40,20 +40,20 @@ namespace mt
 #define mtlikely(...)   __builtin_expect(!!(__VA_ARGS__),1)
 
 // declare the enum as C-style so we don't get annoying compile warnings about conversions
-typedef enum
-{
-  MT_SUCCESS,
-  MT_ERROR_UNKNOWN,
-  MT_ERROR_LOGIC,
-  MT_ERROR_OUT_OF_RANGE,
-  MT_ERROR_INCOMP_SIZE,
-  MT_ERROR_MAX,
-} mt_error_t;
+using mt_error_t = int;
+#define MT_SUCCESS            0
+#define MT_ERROR_UNKNOWN      1
+#define MT_ERROR_LOGIC        2
+#define MT_ERROR_OUT_OF_RANGE 3
+#define MT_ERROR_INCOMP_SIZE  4
+#define MT_ERROR_GPU          5
+#define MT_ERROR_MAX          6
 
 namespace detail
 {
 
-static inline constexpr bool check_error(mt_error_t err) noexcept { return static_cast<bool>(err); }
+static inline constexpr bool check_error(mt_error_t err) noexcept { return err != MT_SUCCESS; }
+static inline constexpr mt_error_t error_convert(mt_error_t err) noexcept { return err; }
 
 }
 
@@ -66,8 +66,19 @@ enum class error_type
 #define MTCHECK(...) do {                                                                      \
     const auto errc = __VA_ARGS__;                                                             \
     if (mtunlikely(mt::detail::check_error(errc))) {                                           \
-      return mt::error(__FILE__,MT_FUNCTION_NAME,__LINE__,mt::error_type::ERROR_REPEAT,static_cast<mt::mt_error_t>(errc),nullptr); \
+      return mt::error(__FILE__,MT_FUNCTION_NAME,__LINE__,mt::error_type::ERROR_REPEAT,mt::detail::error_convert(errc),nullptr); \
     }                                                                                          \
+  } while (0)
+
+#define MTCHECK_ABORT(...) do {                 \
+    const auto errc = __VA_ARGS__;              \
+    if (mtunlikely(mt::detail::check_error(errc))) {    \
+                                                        \
+    }                                                   \
+  } while (0)
+
+#define MTASSERT(cond,...) do {                         \
+    if (mtunlikely(!(cond))) MTSETERR(__VA_ARGS__);     \
   } while (0)
 
 #define MTSETERR(errcode,...) return mt::error(__FILE__,MT_FUNCTION_NAME,__LINE__,mt::error_type::ERROR_INITIAL,errcode,__VA_ARGS__)
@@ -81,6 +92,13 @@ enum class error_type
   catch (...) { MTSETERR(MT_ERROR_UNKNOWN,"Unknown exception caught");  }
 
 MT_EXTERN mt_error_t error(const char*,const char*,int,error_type,mt_error_t,const char*,...) noexcept;
+MT_EXTERN mt_error_t sleep(std::size_t) noexcept;
+
+enum class device_type
+{
+  host,
+  cuda
+};
 
 } // namespace mt
 
