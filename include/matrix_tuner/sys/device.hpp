@@ -67,6 +67,10 @@ public:
 
 class host_device : public device
 {
+  // placeholders
+  const void *stream_ = nullptr;
+  const void *handle_ = nullptr;
+
 public:
   /* the host is always initialized */
   constexpr host_device() noexcept : device(device_type::host,true) { }
@@ -79,6 +83,8 @@ public:
 
   mt_error_t initialize() noexcept final { return const_cast<const host_device*>(this)->initialize(); }
   mt_error_t finalize()   noexcept final { return const_cast<const host_device*>(this)->finalize();   }
+  auto       stream() const noexcept     { return stream_;                                            }
+  auto       handle() const noexcept     { return handle_;                                            }
 };
 
 class cuda_device : public device
@@ -93,6 +99,8 @@ public:
 
   mt_error_t initialize() noexcept final;
   mt_error_t finalize()   noexcept final;
+  auto       stream() const noexcept     { return stream_; }
+  auto       handle() const noexcept     { return handle_; }
 };
 
 } // namespace mt
