@@ -28,7 +28,22 @@ mt_error_t dense_matrix::mult(const dense_matrix *A, dense_matrix *B) const noex
       }
     }
   } else {
+    constexpr auto  one    = 1.0, zero = 0.0;
+    const auto      size   = data_.size()*sizeof(value_type);
+    auto            device = dynamic_cast<cuda_device*>(device_);
+    value_type     *d_buf_s,*d_buf_a,*d_buf_b;
 
+    B->data_.resize(data_.size());
+    MTCHECK(cudaMalloc(reinterpret_cast<void**>(&d_buf_s),size));
+    MTCHECK(cudaMalloc(reinterpret_cast<void**>(&d_buf_a),size));
+    MTCHECK(cudaMalloc(reinterpret_cast<void**>(&d_buf_b),size));
+    MTCHECK(cudaMemcpyAsync(d_buf_s,data_.data(),size,cudaMemcpyDefault,device->stream()));
+    MTCHECK(cudaMemcpyAsync(d_buf_a,A->data_.data(),size,cudaMemcpyDefault,device->stream()));
+    MTCHECK(cublasDgemm(device->handle(),CUBLAS_OP_N, CUBLAS_OP_N,nrows(),ncols(),ncols(),&one,d_buf_s,ncols(),d_buf_a,nrows(),&zero,d_buf_b,nrows()));
+    MTCHECK(cudaMemcpyAsync(B->data_.data(),d_buf_b,size,cudaMemcpyDefault,device->stream()));
+    MTCHECK(cudaFree(d_buf_s));
+    MTCHECK(cudaFree(d_buf_a));
+    MTCHECK(cudaFree(d_buf_b));
   }
   return MT_SUCCESS;
 });
